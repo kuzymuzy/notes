@@ -1,0 +1,20 @@
+{
+    "posts_example": [
+        {
+            "count": 1,
+            "name": "Name of your post",
+            "posturl": "post url",
+            "fileuri": "url of md file with post text",
+            "imgurl": "url of picture for youre post",
+            "description": "discription, somethink about your post"
+        },
+        {
+            "count": 1,
+            "name": "",
+            "posturl": "",
+            "fileuri": "",
+            "imgurl": "",
+            "description": ""
+        }
+    ]
+}

@@ -8,12 +8,12 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/apple-touch-icon.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Post kuzymuzy.ru">
-    <meta name="description" content="Post kuzymuzy.ru">
-    <meta property="og:title" content="Post kuzymuzy.ru">
-    <meta property="og:description" content="Post kuzymuzy.ru">
+    <meta name="apple-mobile-web-app-title" content="Post from kuzymuzy.ru">
+    <meta name="description" content="Post from kuzymuzy.ru">
+    <meta property="og:title" content="Post from kuzymuzy.ru">
+    <meta property="og:description" content="Post from kuzymuzy.ru">
     <meta property="og:type" content="website">
-    <meta property="og:site_name" content="Post kuzymuzy.ru">
+    <meta property="og:site_name" content="Post from kuzymuzy.ru">
     <link href="/module/github-markdown/github-markdown-dark.css" rel="stylesheet"/>
     <style>
         body {
@@ -137,7 +137,7 @@
                 }
 
                 const mdRes = await fetch(post.fileuri);
-                if (!mdRes.ok) throw new Error('Ошибка загрузки Markdown файла');
+                if (!mdRes.ok) throw new Error('Ошибка загрузки md файла');
                 const mdText = await mdRes.text();
                 content.innerHTML = marked.parse(mdText);
 

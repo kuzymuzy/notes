@@ -2,15 +2,19 @@
     "posts": [
         {
             "count": 1,
-            "name": "Как сгенерировать WARP Config от CloudFlare",
-            "posturl": "kak-sgenerirovat-warp",
-            "fileuri": "https://raw.githubusercontent.com/ImMALWARE/bash-warp-generator/refs/heads/main/README.md"
+            "name": "Как правильно воспитать ребенка и не вырастить “iPad kiddo”",
+            "posturl": "kak-pravilno-vospitat-rebenka",
+            "fileuri": "/assets/Postsmd/kak-pravilno-vospitat-rebenka.md",
+            "imgurl": "https://example.com/imgurl/мне пока лень.png",
+            "description": "Короткое описание поста"
         },
         {
             "count": 2,
             "name": "Yandex Home для MacOS",
             "posturl": "yandex-home-for-macOS",
-            "fileuri": "https://raw.githubusercontent.com/kuzymuzy/Yandex-Home-Mac-App/refs/heads/main/README.md"
+            "fileuri": "https://raw.githubusercontent.com/kuzymuzy/Yandex-Home-Mac-App/refs/heads/main/README.md",
+            "imgurl": "https://example.com/imgurl/мне пока лень.png",
+            "description": "Короткое описание поста"
         }
     ]
 }

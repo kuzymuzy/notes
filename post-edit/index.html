@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<title>note.kuzymuzy.ru Редактор постов</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="/module/github-markdown/github-markdown-dark.css" rel="stylesheet"/>
+<style>
+  body {
+    background: #0d1117;
+    color: #c9d1d9;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    margin: 0; padding: 1rem;
+  }
+  textarea {
+    width: 100%;
+    height: 200px;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    color: #c9d1d9;
+    font-family: monospace;
+    font-size: 14px;
+    padding: 10px;
+    box-sizing: border-box;
+    resize: vertical;
+  }
+  .container {
+    max-width: 900px;
+    margin: auto;
+  }
+  .buttons, .format-buttons {
+    margin: 0.5rem 0;
+  }
+  button {
+    background: #238636;
+    border: none;
+    color: white;
+    padding: 8px 15px;
+    margin-right: 10px;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  button:hover {
+    background: #2ea043;
+  }
+  #preview {
+    margin-top: 1rem;
+    background: #161b22;
+    padding: 1rem;
+    border-radius: 6px;
+    border: 1px solid #30363d;
+    min-height: 100px;
+  }
+  label {
+    display: inline-block;
+    margin-right: 10px;
+    font-weight: 600;
+  }
+  input[type="text"] {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 5px;
+    padding: 5px 10px;
+    color: #c9d1d9;
+    font-size: 14px;
+    width: 200px;
+  }
+  #tableModal {
+    display: none;
+    position: fixed;
+    z-index: 10;
+    left: 0; top: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.7);
+    align-items: center;
+    justify-content: center;
+  }
+  #tableModalContent {
+    background: #161b22;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 400px;
+    width: 90%;
+  }
+  #tableModalContent label {
+    display: block;
+    margin-top: 10px;
+  }
+  #tableColsContainer input {
+    width: 100%;
+    margin-top: 5px;
+    background: #0d1117;
+    border: 1px solid #30363d;
+    color: #c9d1d9;
+    border-radius: 4px;
+    padding: 5px;
+  }
+  #tableModalContent button {
+    margin-top: 15px;
+    width: 100%;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>Редактор постов</h1>
+
+    <div class="format-buttons">
+      <button data-md="h1" title="Заголовок H1">H1</button>
+      <button data-md="bold" title="Жирный текст"><b>B</b></button>
+      <button data-md="italic" title="Курсив"><i>I</i></button>
+      <button data-md="highlight" title="Выделить текст">Highlight</button>
+      <button data-md="crossout" title="Зачеркнуть">Сross out</button>
+      <button data-md="separate" title="Отделить текст">Separate</button>
+      <button data-md="quote" title="Цитиировать">Quote</button>
+      <button data-md="link" title="Вставить ссылку">Link</button>
+      <button data-md="code" title="Код">Code</button>
+      <button data-md="list" title="Сделать списком">List</button>
+      <button data-md="table" title="Вставить таблицу">Table</button>
+    </div>
+
+    <div class="buttons">
+      <input type="file" id="fileInput" accept=".md,text/markdown" style="display:none" />
+      <button id="btnLoadFile">Загрузить файл</button>
+
+      <label for="filenameInput">Имя файла при скачивании:</label>
+      <input type="text" id="filenameInput" value="post.md" />
+
+      <button id="btnDownload">Скачать файл</button>
+    </div>
+
+    <textarea id="markdownInput" placeholder="Введите Markdown здесь..."></textarea>
+
+    <h2>Превью</h2>
+    <div id="preview" class="markdown-body"></div>
+  </div>
+
+  <div id="tableModal">
+    <div id="tableModalContent">
+      <h3>Создать таблицу</h3>
+      <label for="colsCount">Количество столбцов (1-10):</label>
+      <input type="number" id="colsCount" min="1" max="10" value="2" />
+      <div id="tableColsContainer"></div>
+      <button id="tableInsertBtn">Вставить таблицу</button>
+      <button id="tableCancelBtn" style="margin-top:8px; background:#a73e3e;">Отмена</button>
+    </div>
+  </div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+  const markdownInput = document.getElementById('markdownInput');
+  const preview = document.getElementById('preview');
+  const fileInput = document.getElementById('fileInput');
+  const btnLoadFile = document.getElementById('btnLoadFile');
+  const btnDownload = document.getElementById('btnDownload');
+  const filenameInput = document.getElementById('filenameInput');
+  const formatButtons = document.querySelectorAll('.format-buttons button');
+
+  const tableModal = document.getElementById('tableModal');
+  const colsCountInput = document.getElementById('colsCount');
+  const colsContainer = document.getElementById('tableColsContainer');
+  const tableInsertBtn = document.getElementById('tableInsertBtn');
+  const tableCancelBtn = document.getElementById('tableCancelBtn');
+
+  marked.setOptions({
+    gfm: true,
+    breaks: true,
+    headerIds: true,
+  });
+
+  function updatePreview() {
+    preview.innerHTML = marked.parse(markdownInput.value);
+  }
+
+  markdownInput.addEventListener('input', updatePreview);
+
+  btnLoadFile.addEventListener('click', () => fileInput.click());
+
+  fileInput.addEventListener('change', () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      markdownInput.value = reader.result;
+      updatePreview();
+    };
+    reader.readAsText(file, 'UTF-8');
+  });
+
+  btnDownload.addEventListener('click', () => {
+    const filename = filenameInput.value.trim() || 'post.md';
+    const blob = new Blob([markdownInput.value], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename.endsWith('.md') ? filename : filename + '.md';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  function insertText(textarea, before, after, placeholder) {
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selected = textarea.value.substring(start, end);
+    if (selected.length > 0) {
+      textarea.setRangeText(before + selected + after, start, end, 'end');
+    } else {
+      const insert = before + (placeholder || '') + after;
+      textarea.setRangeText(insert, start, end, 'end');
+      textarea.selectionStart = start + before.length;
+      textarea.selectionEnd = start + before.length + (placeholder ? placeholder.length : 0);
+    }
+    textarea.focus();
+    updatePreview();
+  }
+
+  function toggleHeaderH1(textarea) {
+    const startLine = textarea.value.lastIndexOf('\n', textarea.selectionStart - 1) + 1;
+    const endLine = textarea.value.indexOf('\n', textarea.selectionEnd);
+    const endLineIndex = endLine === -1 ? textarea.value.length : endLine;
+    const lineText = textarea.value.slice(startLine, endLineIndex);
+    if (lineText.startsWith('# ')) {
+      const newText = lineText.replace(/^# /, '');
+      textarea.setRangeText(newText, startLine, endLineIndex, 'end');
+      textarea.selectionStart = startLine;
+      textarea.selectionEnd = startLine + newText.length;
+    } else {
+      textarea.setRangeText('# ' + lineText, startLine, endLineIndex, 'end');
+      textarea.selectionStart = startLine;
+      textarea.selectionEnd = startLine + 2 + lineText.length;
+    }
+    textarea.focus();
+    updatePreview();
+  }
+
+  formatButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      switch (btn.dataset.md) {
+        case 'h1':
+          toggleHeaderH1(markdownInput);
+          break;
+        case 'bold': 
+          insertText(markdownInput, '**', '**', 'жирный текст');
+          break;
+        case 'separate':
+          insertText(markdownInput, '---');
+          break;
+        case 'crossout':
+          insertText(markdownInput, '~~', '~~', 'зачеркнутый текст');
+          break;
+        case 'list':
+            insertText(markdownInput, '+ ', ' ', 'пункт списка');
+            break;
+        case 'highlight':
+          insertText(markdownInput, '`', '`', 'Выделенныйтекст');
+          break;
+        case 'italic':
+          insertText(markdownInput, '*', '*', 'курсив');
+          break;
+        case 'link':
+          insertText(markdownInput, '[', '](http://)', 'текст ссылки');
+          break;
+        case 'quote':
+          insertText(markdownInput, '> ', ' ', 'цитата');
+          break;
+        case 'code':
+          insertText(markdownInput, '```\n', '\n```', 'код');
+          break;
+        case 'table':
+          openTableModal();
+          break;
+      }
+    });
+  });
+
+  function openTableModal() {
+    tableModal.style.display = 'flex';
+    generateColInputs(colsCountInput.value);
+    colsCountInput.focus();
+  }
+
+  function closeTableModal() {
+    tableModal.style.display = 'none';
+    colsContainer.innerHTML = '';
+  }
+
+  colsCountInput.addEventListener('input', () => {
+    let val = parseInt(colsCountInput.value);
+    if (isNaN(val) || val < 1) val = 1;
+    if (val > 10) val = 10;
+    colsCountInput.value = val;
+    generateColInputs(val);
+  });
+
+  function generateColInputs(count) {
+    colsContainer.innerHTML = '';
+    for (let i = 0; i < count; i++) {
+      const label = document.createElement('label');
+      label.textContent = `Название столбца ${i + 1}:`;
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.placeholder = `Колонка ${i + 1}`;
+      input.value = `Колонка ${i + 1}`;
+      label.appendChild(input);
+      colsContainer.appendChild(label);
+    }
+  }
+
+  tableInsertBtn.addEventListener('click', () => {
+    const inputs = colsContainer.querySelectorAll('input');
+    if (inputs.length === 0) return;
+    const headers = Array.from(inputs).map(i => i.value.trim() || 'Колонка');
+    const colCount = headers.length;
+    let tableMarkdown = '\n|' + headers.join('|') + '|\n';
+    tableMarkdown += '|' + headers.map(() => '---').join('|') + '|\n';
+    tableMarkdown += '|' + Array(colCount).fill(' ').join('|') + '|\n';
+    insertAtCursor(markdownInput, tableMarkdown);
+    closeTableModal();
+  });
+
+  tableCancelBtn.addEventListener('click', closeTableModal);
+
+  function insertAtCursor(textarea, text) {
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    textarea.setRangeText(text, start, end, 'end');
+    textarea.selectionStart = start + text.length;
+    textarea.selectionEnd = textarea.selectionStart;
+    textarea.focus();
+    updatePreview();
+  }
+
+  updatePreview();
+</script>
+</body>
+</html>

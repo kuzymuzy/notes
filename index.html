@@ -1,13 +1,257 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>herf link</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Post</title>
+    <link rel="icon" href="https://kuzymuzy.ru/favicon.ico" type="image/x-icon"/>
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/apple-touch-icon.png"/>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+    <meta name="apple-mobile-web-app-title" content="Post kuzymuzy.ru"/>
+    <meta name="description" content="Post kuzymuzy.ru"/>
+    <meta property="og:title" content="Post kuzymuzy.ru"/>
+    <meta property="og:description" content="Post kuzymuzy.ru"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:site_name" content="Post kuzymuzy.ru"/>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 2rem;
+            background: #0d1117;
+            color: #c9d1d9;
+            min-height: 100vh;
+        }
+
+        .theme-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .theme-icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+            transition: color 0.3s;
+        }
+
+        .theme-switch {
+            position: relative;
+            display: inline-block;
+            width: 34px;
+            height: 20px;
+        }
+
+        .theme-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            background-color: #ccc;
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background: linear-gradient(to right, #4776E6, #8E54E9);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(14px);
+        }
+
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .post-card {
+            background: var(--card-bg, #161b22);
+            border: 1px solid var(--card-border, #30363d);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .post-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 12px rgba(255, 255, 255, 0.1);
+        }
+
+        .post-card img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-bottom: 1px solid var(--card-border, #30363d);
+        }
+
+        .post-content {
+            padding: 1rem;
+        }
+
+        .post-card h3 {
+            color: var(--text, #ffffff);
+            margin: 0 0 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .post-card p {
+            margin: 0;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            color: var(--text-secondary, #8b949e);
+        }
+
+        .post-card a {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            height: 100%;
+        }
+
+        body.light-theme {
+            --text: #161616;
+            --card-bg: #ffffff;
+            --card-border: #d0d7de;
+            --text-secondary: #373737;
+        }
+
+        body.dark-theme {
+            --card-bg: #161b22;
+            --card-border: #30363d;
+            --text-secondary: #8b949e;
+        }
+    </style>
 </head>
 <body>
+    <div class="theme-container">
+        <span title="Это то какая у тебя темя будет)" class="theme-icon" id="theme-icon">🌑</span>
+        <label title="Сменить оформление" class="theme-switch">
+            <input type="checkbox" id="theme-toggle" />
+            <span class="slider"></span>
+        </label>
+    </div>
+
+    <div class="posts-grid" id="post-list">
+    </div>
+
     <script>
-        window.location.href = "/post"
+        fetch("/assets/posts.json")
+            .then(response => response.json())
+            .then(data => {
+                const postList = document.getElementById("post-list");
+                postList.innerHTML = "";
+
+                if (!data.posts || data.posts.length === 0) {
+                    postList.innerHTML = "<p>Нет постов</p>";
+                    return;
+                }
+
+                data.posts.forEach(post => {
+                    const card = document.createElement("div");
+                    card.className = "post-card";
+
+                    const link = document.createElement("a");
+                    link.href = `/post/index.html#${encodeURIComponent(post.posturl)}`;
+
+                    const image = document.createElement("img");
+                    image.src = post.imgurl;
+                    image.alt = post.name;
+
+                    const content = document.createElement("div");
+                    content.className = "post-content";
+
+                    const title = document.createElement("h3");
+                    title.textContent = post.name;
+
+                    const desc = document.createElement("p");
+                    desc.textContent = post.description || "";
+
+                    content.appendChild(title);
+                    content.appendChild(desc);
+                    link.appendChild(image);
+                    link.appendChild(content);
+                    card.appendChild(link);
+                    postList.appendChild(card);
+                });
+            })
+            .catch(error => {
+                console.error("Ошибка загрузки постов:", error);
+                document.getElementById("post-list").innerHTML = "<p>Ошибка загрузки постов</p>";
+            });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const themeIcon = document.getElementById('theme-icon');
+            const themeToggle = document.getElementById('theme-toggle');
+
+            function addThemeCSS(href) {
+                if (document.querySelector(`link[href="${href}"]`)) return;
+                removeThemeCSS();
+                const link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = href;
+                document.head.appendChild(link);
+            }
+
+            function removeThemeCSS() {
+                const lightCSS = document.querySelector('link[href="/module/github-markdown/github-markdown-light.css"]');
+                if (lightCSS) lightCSS.remove();
+                const darkCSS = document.querySelector('link[href="/module/github-markdown/github-markdown-dark.css"]');
+                if (darkCSS) darkCSS.remove();
+            }
+
+            function applyTheme(theme) {
+                const body = document.body;
+
+                if (theme === 'dark-theme') {
+                    body.classList.remove('light-theme');
+                    body.classList.add('dark-theme');
+                    body.style.background = '#0d1117';
+                    themeIcon.textContent = '🌕';
+                    themeToggle.checked = true;
+                } else {
+                    body.classList.remove('dark-theme');
+                    body.classList.add('light-theme');
+                    body.style.background = '#ffffff';
+                    themeIcon.textContent = '🌑';
+                    themeToggle.checked = false;
+                }
+
+                localStorage.setItem('theme', theme);
+            }
+
+            const savedTheme = localStorage.getItem('theme');
+            applyTheme(savedTheme || 'dark-theme');
+
+            themeToggle.addEventListener('change', function () {
+                applyTheme(this.checked ? 'dark-theme' : 'light-theme');
+            });
+        });
     </script>
 </body>
 </html>
