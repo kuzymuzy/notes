@@ -89,6 +89,50 @@
         input:checked + .slider:before {
             transform: translateX(14px);
         }
+
+        button {
+            background-color: #21262d;
+            color: #c9d1d9;
+            border: 1px solid #30363d;
+            padding: 6px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+            margin-top: 2rem;
+        }
+
+        button:hover {
+            background-color: #30363d;
+            border-color: #8b949e;
+        }
+
+        button:active {
+            background-color: #1a1f24;
+            border-color: #6e7681;
+        }
+
+        #desktop-content {
+            display: block;
+        }
+
+        #mobile-content {
+            display: none;
+        }
+
+        @media (max-width: 500px) {
+            #desktop-content {
+                display: none;
+            }
+
+            #mobile-content {
+                display: block;
+                padding-bottom: 3rem;
+                font-size: 16px;
+                line-height: 1.6;
+            }
+        }
     </style>
 </head>
 <body>
@@ -100,9 +144,15 @@
         </label>
     </li>
 
-    <main>
+    <main id="desktop-content">
         <div id="content" class="markdown-body">Загрузка...</div>
     </main>
+
+    <div id="mobile-content" class="markdown-body">
+        Загрузка...
+    </div>
+
+    <button onclick="window.location.href='/'">← Назад</button>
     
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
@@ -113,6 +163,7 @@
         });
 
         const content = document.getElementById('content');
+        const mobilecontent = document.getElementById('mobile-content');
 
         function getSlugFromHash() {
             return location.hash ? location.hash.substring(1) : null;
@@ -136,10 +187,13 @@
                     return;
                 }
 
+                document.title = `Post: ${post.name}`;
+
                 const mdRes = await fetch(post.fileuri);
                 if (!mdRes.ok) throw new Error('Ошибка загрузки md файла');
                 const mdText = await mdRes.text();
                 content.innerHTML = marked.parse(mdText);
+                mobilecontent.innerHTML = marked.parse(mdText);
 
             } catch (error) {
                 content.textContent = 'Ошибка: ' + error.message;
