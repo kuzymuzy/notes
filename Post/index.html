@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <title>Post</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="icon" href="https://kuzymuzy.ru/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Post kuzymuzy.ru">
+    <meta name="description" content="Post kuzymuzy.ru">
+    <meta property="og:title" content="Post kuzymuzy.ru">
+    <meta property="og:description" content="Post kuzymuzy.ru">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Post kuzymuzy.ru">
+    <link href="/module/github-markdown/github-markdown-dark.css" rel="stylesheet"/>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+            margin: 0; padding: 2rem;
+            background: #0d1117;
+            color: #c9d1d9;
+            min-height: 100vh;
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #0d1117;
+            padding: 2rem;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+            box-shadow: 0 0 20px rgb(12 17 23 / 0.9);
+        }
+
+        .theme-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .theme-icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+            transition: color 0.3s;
+        }       
+
+        .theme-switch {
+            position: relative;
+            display: inline-block;
+            width: 34px;
+            height: 20px;
+        }
+
+        .theme-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            background-color: #ccc;
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background: linear-gradient(to right, #4776E6, #8E54E9);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(14px);
+        }
+    </style>
+</head>
+<body>
+    <li class="theme-container">
+        <span title="Это то какая у тебя темя будет)" class="theme-icon" id="theme-icon">🌑</span>
+            <label title="Сменить оформление" class="theme-switch">
+                <input type="checkbox" id="theme-toggle">
+                <span class="slider"></span>
+        </label>
+    </li>
+
+    <main>
+        <div id="content" class="markdown-body">Загрузка...</div>
+    </main>
+    
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        marked.setOptions({
+            gfm: true,
+            breaks: true,
+            headerIds: true,
+        });
+
+        const content = document.getElementById('content');
+
+        function getSlugFromHash() {
+            return location.hash ? location.hash.substring(1) : null;
+        }
+
+        async function loadPost() {
+            const slug = getSlugFromHash();
+            if (!slug) {
+                content.textContent = 'Не удалось найти пост';
+                return;
+            }
+
+            try {
+                const res = await fetch('/assets/posts.json');
+                if (!res.ok) throw new Error('Ошибка загрузки списка постов');
+                const data = await res.json();
+
+                const post = data.posts.find(p => p.posturl === slug);
+                if (!post) {
+                    content.textContent = 'Пост не найден';
+                    return;
+                }
+
+                const mdRes = await fetch(post.fileuri);
+                if (!mdRes.ok) throw new Error('Ошибка загрузки Markdown файла');
+                const mdText = await mdRes.text();
+                content.innerHTML = marked.parse(mdText);
+
+            } catch (error) {
+                content.textContent = 'Ошибка: ' + error.message;
+            }   
+        }
+
+        window.addEventListener('load', loadPost);
+
+        window.addEventListener('hashchange', loadPost);
+    </script>
+    <script src="/assets/scripts.js"></script>
+</body>
+</html>

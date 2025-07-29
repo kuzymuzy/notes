@@ -1,0 +1,16 @@
+{
+    "posts": [
+        {
+            "count": 1,
+            "name": "Как сгенерировать WARP Config от CloudFlare",
+            "posturl": "kak-sgenerirovat-warp",
+            "fileuri": "https://raw.githubusercontent.com/ImMALWARE/bash-warp-generator/refs/heads/main/README.md"
+        },
+        {
+            "count": 2,
+            "name": "Yandex Home для MacOS",
+            "posturl": "yandex-home-for-macOS",
+            "fileuri": "https://raw.githubusercontent.com/kuzymuzy/Yandex-Home-Mac-App/refs/heads/main/README.md"
+        }
+    ]
+}
