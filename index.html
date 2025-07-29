@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<link rel="icon" href="https://kuzymuzy.ru/favicon.ico" type="image/x-icon">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/img/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Post kuzymuzy.ru">
+<meta name="description" content="Post kuzymuzy.ru">
+<meta property="og:title" content="Post kuzymuzy.ru">
+<meta property="og:description" content="Post kuzymuzy.ru">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Post kuzymuzy.ru">
+<title>Post</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown.min.css" rel="stylesheet" />
+
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    margin: 0; padding: 2rem;
+    background: #0d1117;
+    color: #c9d1d9;
+    min-height: 100vh;
+  }
+  main {
+    max-width: 900px;
+    margin: 0 auto;
+    background: #0d1117;
+    padding: 2rem;
+    border-radius: 8px;
+    border: 1px solid #30363d;
+    box-shadow: 0 0 20px rgb(12 17 23 / 0.9);
+  }
+  .markdown-body {
+    color: #c9d1d9;
+  }
+  .markdown-body a {
+    color: #58a6ff;
+    text-decoration: none;
+  }
+  .markdown-body a:hover {
+    text-decoration: underline;
+  }
+  .markdown-body h1,
+  .markdown-body h2,
+  .markdown-body h3,
+  .markdown-body h4,
+  .markdown-body h5,
+  .markdown-body h6 {
+    color: #f0f6fc;
+  }
+  .markdown-body table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  .markdown-body th,
+  .markdown-body td {
+    border: 1px solid #30363d;
+    padding: 6px 13px;
+  }
+  .markdown-body th {
+    background-color: #161b22;
+    color: #8b949e;
+  }
+  .markdown-body tr:nth-child(even) {
+    background-color: #161b22;
+  }
+  .markdown-body code {
+    background-color: #161b22;
+    color: #8b949e;
+    padding: 0.2em 0.4em;
+    border-radius: 6px;
+    font-size: 85%;
+    font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  }
+</style>
+</head>
+<body>
+<main>
+  <div id="content" class="markdown-body">Загрузка...</div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+  marked.setOptions({
+    gfm: true,
+    breaks: true,
+    headerIds: true,
+  });
+
+  const content = document.getElementById('content');
+
+  const fileUri = "https://gameapi.x10.mx/Passport.md"
+
+  if (!fileUri) {
+    content.textContent = 'Ошибка: загрузки файла';
+  } else {
+    fetch(fileUri)
+      .then(res => {
+        if (!res.ok) throw new Error('Ошибка загрузки файла');
+        return res.text();
+      })
+      .then(md => {
+        content.innerHTML = marked.parse(md);
+      })
+      .catch(err => {
+        content.textContent = 'Ошибка: ' + err.message;
+      });
+  }
+</script>
+</body>
+</html>
