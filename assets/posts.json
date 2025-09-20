@@ -6,7 +6,7 @@
             "posturl": "kak-pravilno-vospitat-rebenka",
             "fileuri": "/assets/Postsmd/kak-pravilno-vospitat-rebenka.md",
             "imgurl": "https://example.com/imgurl/мне пока лень.png",
-            "description": "Короткое описание поста"
+            "description": "Как правильно воспитать ребенка, так что бы он вас уважал."
         },
         {
             "count": 2,
@@ -14,7 +14,15 @@
             "posturl": "yandex-home-for-macOS",
             "fileuri": "https://raw.githubusercontent.com/kuzymuzy/Yandex-Home-Mac-App/refs/heads/main/README.md",
             "imgurl": "https://example.com/imgurl/мне пока лень.png",
-            "description": "Короткое описание поста"
+            "description": "Немного про Yandex Home app на macOS"
+        },
+        {
+            "count": 3,
+            "name": "Настройка VLESS + Reality для обхода whitelist",
+            "posturl": "vless-reality-whitelist",
+            "fileuri": "/assets/Postsmd/vless-reality-whitelist.md",
+            "imgurl": "https://example.com/imgurl/мне пока лень.png",
+            "description": "В этом коротком гайде мы настроим VLESS + Reality так что бы обходить белый списки"
         }
     ]
 }
