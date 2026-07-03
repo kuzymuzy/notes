@@ -23,6 +23,14 @@
             "fileuri": "/assets/Postsmd/vless-reality-whitelist.md",
             "imgurl": "https://example.com/imgurl/мне пока лень.png",
             "description": "В этом коротком гайде мы настроим VLESS + Reality так что бы обходить белый списки"
+        },
+        {
+            "count": 4,
+            "name": "MasterDnsVPN VPN через DNS",
+            "posturl": "MasterDnsVPN-VPN-on-DNS",
+            "fileuri": "/assets/Postsmd/MasterDnsVPN-vpn-cherez-DNS-instruction.md",
+            "imgurl": "https://example.com/imgurl/мне пока лень.png",
+            "description": "Гайд писал claude в нем инструкция по настройке VPN через протокол DNS работает при самой жесткой цензуер и даже белых списках"
         }
     ]
 }
